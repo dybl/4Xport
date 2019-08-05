@@ -1,3 +1,18 @@
+
+import os, sys
+path1 = './input'  #指定名称文件夹所在路径
+path2 = './test/'    #新建文件夹所在路径
+ 
+def MkDir():
+    dirs = os.listdir(path1)
+ 
+    for dir in dirs:
+        file_name = path2 + str(dir)
+        os.mkdir(file_name)
+ 
+MkDir()
+
+
 '''
 使用须知：
 1，脚本作用：新增指标时，生成['ZB_FACT_DIM_YS', 'Y_COLUMN_MAP_ZBFACT', 'ZBMX' , 'HD_ZBMX_HZ']这4张表的初始化数据
@@ -10,7 +25,6 @@
 '''
 
 import pymssql  as msdb
-import os
 
 class Mssql:
     '''
@@ -163,11 +177,20 @@ with open(r'./input/zb.txt','r')as f:
 
 #写入文件
 
+output_dir = './output/CUBE/'
 
-prefix = "add_"
-for i in range(len(tables)):
-    output_file_name = './output/CUBE/' + str(prefix) + str(tables[i]) + ".sql"
-    f = open(output_file_name, 'w+')
+prefix = 'add_'
+
+i = 1
+
+while True:
+    for i in range(len(tables)):
+        i += 1
+        output_file_name = str(prefix) + str(i)
+        with open()
+
+
+with open(r'./output/CUBE/add_zb_hz.sql', 'w+')as f:
     cnt = 0  #用于计数，第几个指标
     for zb in zbList:
         zb = zb.strip()  # 去除zb.txt中的空格， 必须
@@ -176,17 +199,17 @@ for i in range(len(tables)):
         zbId = zb
         info = "No." + str(cnt) + ": " + zbId
         print(info)
-
-        sqlStartScripts = Scripts(sqlStartBf(tables[i], info))
-        f.writelines(sqlStartScripts.SqlStart(zbId,tables[i]))
-        sqlDict = server_conn.ExeSql(exeSqlScripts.SqlStart(zbId,tables[i]))
-        findIdDict = server_conn.ExeSql(findId.SqlStart('',tables[i]))
-        # print(findId.format(table=table))
-        # print(zbId)
-        if findIdDict:
-            findIdP = findIdDict[0].get('name')
-        else:
-            findIdP =''
-        f.writelines(exeSqlScripts.SqlData(sqlDict,tables[i],findIdP,zbId))
-        f.writelines(SqlEnd(tables[i]))
+        for table in tables:
+            sqlStartScripts = Scripts(sqlStartBf(table, info))
+            f.writelines(sqlStartScripts.SqlStart(zbId,table))
+            sqlDict = server_conn.ExeSql(exeSqlScripts.SqlStart(zbId,table))
+            findIdDict = server_conn.ExeSql(findId.SqlStart('',table))
+            # print(findId.format(table=table))
+            # print(zbId)
+            if findIdDict:
+                findIdP = findIdDict[0].get('name')
+            else:
+                findIdP =''
+            f.writelines(exeSqlScripts.SqlData(sqlDict,table,findIdP,zbId))
+            f.writelines(SqlEnd(table))
 
