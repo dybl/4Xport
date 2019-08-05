@@ -9,7 +9,8 @@
     4）需要生成那几张表的数据，变量tables控制
 '''
 
-import pymssql  as msdb
+import pymssql
+import os
 
 class Mssql:
     '''
@@ -24,7 +25,7 @@ class Mssql:
     def _GetConnect(self):
         if not self.database:
             raise (NameError,'数据库没有设置')
-        self.conn = msdb.connect(host = self.host,user = self.user,password = self.password,database = self.database)
+        self.conn = pymssql.connect(host = self.host,user = self.user,password = self.password,database = self.database)
         cur = self.conn.cursor()
         if not cur:
             raise (NameError,'数据连接失败')
@@ -151,20 +152,29 @@ findId = Scripts(findId)
 
 zbList = []
 #读取文件
-
-with open(r'input\zb.txt','r')as f:
-    while True:
-        line = f.readline()
-        # print(line)
-        if line:
-            zbList.append(line.strip('\n'))
-        else:
-            break
+input_zb_dir = './input/zb.txt'
+f = open(input_zb_dir, 'r')
+while True:
+    line = f.readline()
+    # print(line)
+    if line:
+        zbList.append(line.strip('\n'))
+    else:
+        break
 
 # print(zbList)
+output_dir = './output/TYPT/'
+if os.path.exists(output_dir):
+    print("Done!")
+else:
+    os.mkdir('./output/TYPT')
+    print("No such file or directory,So create it")
 
 #写入文件
-with open(r'output\TYPT\add_zb_M_CHART_ZBDW.sql', 'w+')as f:
+prefix = "add_"
+for i in range(len(tables)):
+    output_file_name = output_dir + str(prefix) + str(tables[i]) + ".sql"
+    f = open(output_file_name, 'w+')
     cnt = 0  #用于计数，第几个指标
     for zb in zbList:
         zb = zb.strip()  # 去除zb.txt中的空格， 必须
@@ -173,17 +183,18 @@ with open(r'output\TYPT\add_zb_M_CHART_ZBDW.sql', 'w+')as f:
         zbId = zb
         info = "No." + str(cnt) + ": " + zbId
         print(info)
-        for table in tables:
-            sqlStartScripts = Scripts(sqlStartBf(table, info))
-            f.writelines(sqlStartScripts.SqlStart(zbId,table))
-            sqlDict = server_conn.ExeSql(exeSqlScripts.SqlStart(zbId,table))
-            findIdDict = server_conn.ExeSql(findId.SqlStart('',table))
-            # print(findId.format(table=table))
-            # print(zbId)
-            if findIdDict:
-                findIdP = findIdDict[0].get('name')
-            else:
-                findIdP =''
-            f.writelines(exeSqlScripts.SqlData(sqlDict,table,findIdP,zbId))
-            f.writelines(SqlEnd(table))
+        sqlStartScripts = Scripts(sqlStartBf(tables[i], info))
+        f.writelines(sqlStartScripts.SqlStart(zbId,tables[i]))
+        sqlDict = server_conn.ExeSql(exeSqlScripts.SqlStart(zbId,tables[i]))
+        findIdDict = server_conn.ExeSql(findId.SqlStart('',tables[i]))
+        # print(findId.format(tables[i]=tables[i]))
+        # print(zbId)
+        if findIdDict:
+            findIdP = findIdDict[0].get('name')
+        else:
+            findIdP =''
+        f.writelines(exeSqlScripts.SqlData(sqlDict,tables[i],findIdP,zbId))
+        f.writelines(SqlEnd(tables[i]))
 
+print("-------------------------------\n")
+print("指标脚本已导出至--->output/TYPT\n")

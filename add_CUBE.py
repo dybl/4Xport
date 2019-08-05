@@ -9,7 +9,8 @@
     4）需要生成那几张表的数据，变量tables控制
 '''
 
-import pymssql  as msdb
+import pymssql
+import os
 
 class Mssql:
     '''
@@ -24,7 +25,7 @@ class Mssql:
     def _GetConnect(self):
         if not self.database:
             raise (NameError,'数据库没有设置')
-        self.conn = msdb.connect(host = self.host,user = self.user,password = self.password,database = self.database)
+        self.conn = pymssql.connect(host = self.host,user = self.user,password = self.password,database = self.database)
         cur = self.conn.cursor()
         if not cur:
             raise (NameError,'数据连接失败')
@@ -117,10 +118,6 @@ def SqlEnd(tableName):
     return SqlEnd
 
 
-
-
-
-
 #数据库连接信息
 # server_host = '172.17.1.233\\BI2012'
 # server_database = 'HOSPITAL_CUBEDB_PHARMACY'
@@ -133,7 +130,7 @@ server_password = 'biadmin'
 server_conn = Mssql(host=server_host,database=server_database,user=server_user,password=server_password)
 
 #需要更新的表,指标列表 'ZBMX','Y_COLUMN_MAP_ZBFACT','HD_ZBMX_HZ','ZB_FACT_DIM_YS'
-tables = ['HD_ZBMX_HZ']
+tables = ['ZBMX','Y_COLUMN_MAP_ZBFACT','HD_ZBMX_HZ','ZB_FACT_DIM_YS']
 # zbList = server_conn.ExeSql("select id from ZBMX where id  between 'C501' and 'C526' order by id ")
 # sqlStart = "if not exists(select 1 from {tableName} where {key}='{zb}') \nbegin \n"
 
@@ -149,19 +146,29 @@ findId = Scripts(findId)
 
 zbList = []
 #读取文件
-with open(r'input\zb.txt','r')as f:
-    while True:
-        line = f.readline()
-        # print(line)
-        if line:
-            zbList.append(line.strip('\n'))
-        else:
-            break
+input_zb_dir = './input/zb.txt'
+f = open(input_zb_dir, 'r')
+while True:
+    line = f.readline()
+    # print(line)
+    if line:
+        zbList.append(line.strip('\n'))
+    else:
+        break
 
 # print(zbList)
+output_dir = './output/CUBE/'
+if os.path.exists(output_dir):
+    print("Done!")
+else:
+    os.mkdir('./output/CUBE')
+    print("No such file or directory,So create it")
 
 #写入文件
-with open(r'output\CUBE\add_zb_hz.sql', 'w+')as f:
+prefix = "add_"
+for i in range(len(tables)):
+    output_file_name = output_dir + str(prefix) + str(tables[i]) + ".sql"
+    f = open(output_file_name, 'w+')
     cnt = 0  #用于计数，第几个指标
     for zb in zbList:
         zb = zb.strip()  # 去除zb.txt中的空格， 必须
@@ -170,17 +177,28 @@ with open(r'output\CUBE\add_zb_hz.sql', 'w+')as f:
         zbId = zb
         info = "No." + str(cnt) + ": " + zbId
         print(info)
-        for table in tables:
-            sqlStartScripts = Scripts(sqlStartBf(table, info))
-            f.writelines(sqlStartScripts.SqlStart(zbId,table))
-            sqlDict = server_conn.ExeSql(exeSqlScripts.SqlStart(zbId,table))
-            findIdDict = server_conn.ExeSql(findId.SqlStart('',table))
-            # print(findId.format(table=table))
-            # print(zbId)
-            if findIdDict:
-                findIdP = findIdDict[0].get('name')
-            else:
-                findIdP =''
-            f.writelines(exeSqlScripts.SqlData(sqlDict,table,findIdP,zbId))
-            f.writelines(SqlEnd(table))
+        sqlStartScripts = Scripts(sqlStartBf(tables[i], info))
+        f.writelines(sqlStartScripts.SqlStart(zbId,tables[i]))
+        sqlDict = server_conn.ExeSql(exeSqlScripts.SqlStart(zbId,tables[i]))
+        findIdDict = server_conn.ExeSql(findId.SqlStart('',tables[i]))
+        # print(findId.format(tables[i]=tables[i]))
+        # print(zbId)
+        if findIdDict:
+            findIdP = findIdDict[0].get('name')
+        else:
+            findIdP =''
+        f.writelines(exeSqlScripts.SqlData(sqlDict,tables[i],findIdP,zbId))
+        f.writelines(SqlEnd(tables[i]))
+
+print("-------------------------------\n")
+print("指标脚本已导出至--->output/CUBE\n")
+
+print("***********脚本使用须知：*************\n ")
+print("1：作用：新增指标时，生成['ZB_FACT_DIM_YS', 'Y_COLUMN_MAP_ZBFACT','ZBMX','HD_ZBMX_HZ']的初始化数据\n ")
+print("2：原则：['ZB_FACT_DIM_YS', 'Y_COLUMN_MAP_ZBFACT']先删除后插入；\n ['ZBMX','HD_ZBMX_HZ']先判断后操作\n ")
+print("3：配置(使用前需修改，见文末)：\n ")
+print("    1）数据库连接(server_)\n ")
+print("    2）指标清单路径(input_zb_dir)，必须按行罗列,绝对不能有空格出现\n ")
+print("    3）生成文件路径(output_dir)\n ")
+print("-------------------------------")
 
