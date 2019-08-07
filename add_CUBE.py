@@ -146,7 +146,7 @@ findId = Scripts(findId)
 
 zbList = []
 #读取文件
-input_zb_dir = './input/zb.txt'
+input_zb_dir = './input/tt.txt'
 f = open(input_zb_dir, 'r')
 while True:
     line = f.readline()
@@ -161,7 +161,7 @@ output_dir = './output/CUBE/'
 if os.path.exists(output_dir):
     print("Done!")
 else:
-    os.mkdir('./output/CUBE')
+    os.mkdir('./output/CUBE/')
     print("No such file or directory,So create it")
 
 #写入文件
@@ -192,13 +192,16 @@ for i in range(len(tables)):
 
 print("-------------------------------\n")
 print("指标脚本已导出至--->output/CUBE\n")
+print("-------------------------------")
 
 print("***********脚本使用须知：*************\n ")
 print("1：作用：新增指标时，生成['ZB_FACT_DIM_YS', 'Y_COLUMN_MAP_ZBFACT','ZBMX','HD_ZBMX_HZ']的初始化数据\n ")
 print("2：原则：['ZB_FACT_DIM_YS', 'Y_COLUMN_MAP_ZBFACT']先删除后插入；\n ['ZBMX','HD_ZBMX_HZ']先判断后操作\n ")
-print("3：配置(使用前需修改，见文末)：\n ")
+print("3：配置(使用前需修改)：\n ")
 print("    1）数据库连接(server_)\n ")
 print("    2）指标清单路径(input_zb_dir)，必须按行罗列,绝对不能有空格出现\n ")
 print("    3）生成文件路径(output_dir)\n ")
-print("-------------------------------")
+print("    4）变量tables控制生成哪张表\n ")
+print("*************************************\n ")
+
 

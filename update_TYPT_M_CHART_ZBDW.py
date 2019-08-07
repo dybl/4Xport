@@ -11,6 +11,7 @@
 '''
 
 import pymssql
+import os
 # import pandas
 
 class Mssql:
@@ -99,18 +100,22 @@ class Scripts(Mssql):
                 if sqlCols[i]['name']==findId: #自增列不进行更新
                         continue
                 col = sqlCols[i]['name']
+                '''
                 sqlScripts = sqlScripts + ',' + col + '=\'' + str(dict[0][col]).replace('\'','\'\'') + '\'\n'  #.replace('"','\'\'')
             return sqlStart + 'set\n' + sqlScripts.strip(',')  #+ "where zb_id='{zb}'".format(zb=zb)
+                '''
+                sqlScripts = sqlScripts + ',' + col + '=\'' + str(dict[0][col]).replace('\'','\'\'').replace('None','null') + '\''  #.replace('"','\'\'')
+            return sqlStart + 'set\n' + sqlScripts.strip(',').replace('\'null\'','null')  #+ "where zb_id='{zb}'".format(zb=zb)
         else:
             pass
 
 
 
 #数据库连接信息
-server_host = '172.17.1.233\\BI2012'
-server_database = 'PLATFORM_TYPT_PHARMACY'
+server_host = '172.17.17.121\\BI2012'
+server_database = 'PLATFORM_TYPT_KFZ'
 server_user = 'sa'
-server_password = 'biadmin@123'
+server_password = 'biadmin'
 # server_host = 'localhost\\MSSQLSERVER2012'
 # server_database = 'PLATFORM_TYPT_PHARMACY'
 # server_user = 'sa'
@@ -167,39 +172,48 @@ SqlEndScripts=Scripts(SqlEnd)
 
 zbList = []
 #读取文件
-with open(r'input\zb.txt','r')as f:
-    while True:
-        line = f.readline()
-        # print(line)
-        if line:
-            zbList.append(line.strip('\n'))
-        else:
-            break
+input_zb_dir = './input/tt.txt'
+f = open(input_zb_dir, 'r')
+while True:
+    line = f.readline()
+    # print(line)
+    if line:
+        zbList.append(line.strip('\n'))
+    else:
+        break
+
+# print(zbList)
+output_dir = './output/TYPT/'
+if os.path.exists(output_dir):
+    print("Done!")
+else:
+    os.mkdir('./output/TYPT/')
+    print("No such file or directory,So create it")
 
 #更改所有步骤
 
 def Update():
     updateSqlStartScripts=Scripts(updateSqlStartBF(info))
-    sqlDict = server_conn.ExeSql(exeSqlScripts.SqlStart(zb, table))
-    sqlCols = server_conn.ExeSql(exeSqlColsScripts.SqlStart('', table))  # 当前表所有字段名组成的list
-    findIdDict = server_conn.ExeSql(findId.SqlStart('',table))
+    sqlDict = server_conn.ExeSql(exeSqlScripts.SqlStart(zb, tables[i]))
+    sqlCols = server_conn.ExeSql(exeSqlColsScripts.SqlStart('', tables[i]))  # 当前表所有字段名组成的list
+    findIdDict = server_conn.ExeSql(findId.SqlStart('',tables[i]))
     if sqlDict:
         if findIdDict:
             findIdP = findIdDict[0].get('name')
         else:
             findIdP =''
-        #tjfs = server_conn.ExeSql(tjfsSqlScripts.SqlStart(zb, table))
-        f.writelines(updateSqlStartScripts.SqlStart(zb, table))
-        f.writelines(exeSqlScripts.SqlUpdateData(sqlDict, table, zb, '', sqlCols,findIdDict[0]['name'] if len(findIdDict)>0 else '').replace('None', ''))
-        f.writelines(SqlEndScripts.SqlStart(zb, table))  # update的时候需要添加where条件
+        #tjfs = server_conn.ExeSql(tjfsSqlScripts.SqlStart(zb, tables[i]))
+        f.writelines(updateSqlStartScripts.SqlStart(zb, tables[i]))
+        f.writelines(exeSqlScripts.SqlUpdateData(sqlDict, tables[i], zb, '', sqlCols,findIdDict[0]['name'] if len(findIdDict)>0 else '').replace('None', ''))
+        f.writelines(SqlEndScripts.SqlStart(zb, tables[i]))  # update的时候需要添加where条件
 
 #插入所有步骤
 
 def Insert():
     insertSqlStartScripts=Scripts(insertSqlStartBF(info))
     if sqlDict:
-        sqlDict = server_conn.ExeSql(exeSqlScripts.SqlStart(zb, table))
-        f.writelines(insertSqlStartScripts.SqlStart(zb, table))
+        sqlDict = server_conn.ExeSql(exeSqlScripts.SqlStart(zb, tables[i]))
+        f.writelines(insertSqlStartScripts.SqlStart(zb, tables[i]))
         # f.writelines(exeSqlScripts.SqlInsertData(sqlDict))
         print(exeSqlScripts.SqlInsertData(sqlDict[0]))
         # print(sqlDict[2])
@@ -208,13 +222,27 @@ def Insert():
 
 
 #写入文件
-with open(r'output\TYPT\update_zb_M_CHART_ZBDW.sql', 'w+')as f:
+prefix = "update_"
+for i in range(len(tables)):
+    output_file_name = output_dir + str(prefix) + str(tables[i]) + ".sql"
+    f = open(output_file_name, 'w+')
     cnt = 0  #用于计数，第几个指标
     for zb in zbList:
         zb = zb.strip()  # 去除zb.txt中的空格， 必须
         cnt +=1
         info = "No." + str(cnt) + ": " + zb
         print(info)
-        for table in tables:
-            Update()
-            #Insert()
+        Update()
+        #Insert()
+print("-------------------------------\n")
+print("指标脚本已导出至--->output/TYPT\n")
+print("-------------------------------")
+print("***********脚本使用须知：*************\n ")
+print("1：作用：更新指标时，生成['M_CHART_ZBDW']这三张表的更新脚本\n ")
+print("2：原则：['M_CHART_ZBDW']先判断后更新\n ")
+print("3：配置(使用前需修改)：\n ")
+print("    1）数据库连接(server_)\n ")
+print("    2）指标清单路径(input_zb_dir)，必须按行罗列,绝对不能有空格出现\n ")
+print("    3）生成文件路径(output_dir)\n ")
+print("    4）变量tables控制生成哪张表\n ")
+print("*************************************\n ")
