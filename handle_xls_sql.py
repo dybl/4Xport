@@ -1,9 +1,10 @@
 import os
 import sys
 import xlrd
-import xlwt
+#import xlwt
 from xlutils import *
 import pymssql
+import json
 
 '''
 path1 = './input/' 
@@ -17,68 +18,89 @@ def GenDirFromXlsx():
         os.mkdir(file_name)
 GenDirFromXlsx()
 '''
-
-if os.path.exists('./output_init_data'):
-        print('Done!')
+output_dir = './output_init_data/'
+if os.path.exists(output_dir):
+    print('Done!')
 else:
-        os.mkdir('./output_init_data')
+    os.mkdir('./output_init_data/')
+    print("No such file or directory,So create it")
 
-# 定义方法：读取指定目录下Excel文件某个sheet单元格的值
-def excel_read(file_path,table,x,y):
-     data = xlrd.open_workbook(file_path)
-     table = data.sheet_by_name(table)
-     return table.cell(y,x).value
+'''
+input_dir='./input_zb_list'
+if os.path.exists(input_dir):
+    print('Done!')
+else:
+    os.mkdir('./input_zb_list')
+    print("No such file or directory,So create it")
+'''
 
-# 定义方法：单元格值及样式
-write_obj_list = []
-def concat_obj(cols,rows,value):
-    write_obj_list.append({'cols':cols,'rows':rows,'value':value,\
-'style':xlwt.easyxf('font: name 宋体,height 280;alignment: horiz centre')})
+input_zb_list = './input_zb_list/'
 
-# 定义方法：合并单元格
-def merge_unit(srows,erows,scols,ecols,value):
-    write_obj_list.append({'id':'merge','srows':srows,'erows':erows,'scols':scols,\
-'ecols':ecols,'value':value,'style':xlwt.easyxf('font: name 宋体,height 280;alignment: horiz centre')})
+def get_xlsx_data(filename,amount):
+    xlsx_dir = input_zb_list + filename + '.xlsx'
+    data = xlrd.open_workbook(xlsx_dir)
+    sheet = data.sheets()[amount]
+    rows = sheet.nrows
+    cols = sheet.ncols
+    origin_dict = {}
+    for i in range(1,rows):
+        for j in range(cols):
+            subject_classification = sheet.row_values(j)
+            indicator_lists = sheet.cell_value(i,j)
+            origin_dict[subject_classification] = indicator_lists
+        yield origin_dict
 
-# 定义方法：更新excel
-excel_update(file_path,write_obj_list,new_path):
-    old_excel = xlrd.open_workbook(file_path, formatting_info=True)
-    #管道作用
-    new_excel = copy(old_excel)
-    '''
-    通过get_sheet()获取的sheet有write()方法
-    '''
-    sheet1 = new_excel.get_sheet(0)
-    '''
-    1代表是修改第几个工作表里，从0开始算是第一个。此处修改第一个工作表
-    '''
-    for item in write_obj_list:
-        if 'id' not in item.keys():
-            if 'style' in item.keys():
-                sheet1.write(item['rows'], item['cols'], item['value'],item['style'])
-            else:
-                sheet1.write(item['rows'], item['cols'], item['value'])
-        else:
-            if 'style' in item.keys():
-                sheet1.write_merge(item['srows'],item['erows'],item['scols'], item['ecols'], item['value'],item['style'])
-            else:
-                sheet1.write_merge(item['srows'],item['erows'],item['scols'], item['ecols'], item['value'])
-    '''
-    如果报错 dict_items has no attributes sort
-    把syle源码中--alist.sort() 修改为----> sorted(alist) 
-    一共修改2次
-    '''
-    new_excel.save(file_path)
+'''
+def export_init_data(self, parameter_list):
+    prefix = "add_"
+    for i in range(len(tables)):
+        output_file_name = output_dir + str(prefix) + str(tables[i]) + ".sql"
+        f = open(output_file_name, 'w+')
+'''
 
-#参数详解
-# srows:合并的起始行数
-# erows:合并的结束行数
-# scols:合并的起始列数
-# ecols:合并的结束列数 
-# value:合并单元格后的填充值
-# style:合并后填充风格：
-#     font: name 宋体
-#     height 280;
-#     alignment: horiz centre
-#     ... 与excel操作基本保持一致
+if __name__ == '__main__':
+    for i in get_xlsx_data('test', 0):
+        print(i)
+        '''
+        j = json.dumps(i,ensure_ascii=True)
+        output_file_name = output_dir + str('test')  + ".json"
+        f = open(output_file_name, 'w+')
+        f.writelines(str(j))
+        '''
 
+        
+
+'''
+zb_data = xlrd.open_workbook(input_xlsx)
+sheet = zb_data.sheets()[0]
+rows = sheet.nrows
+cols = sheet.ncols
+for i in range(rows):
+    indicator_subject_classification = sheet.cell_value(i)
+    for i in indicator_subject_classification:
+        if eval(i).get('主题分类'):
+            print(eval(i)['主题分类'])
+        elif eval(i).get('指标'):
+            print(eval(i)['指标'])
+'''
+
+'''
+f = open("xxx.txt", mode="r", encoding="utf-8")
+# 读取表头,例如姓名,性别等
+line = f.readline()
+# 去掉制表符
+lst = line.split("\t")
+# 设置存储列表
+storage = []
+# 接着往后读取
+for lin in f:
+    # 去掉制表符
+    each_line = lin.split("\t")
+    # 设置每一行的存储字典
+    dic = {}
+    for i in range(len(each_line)):
+        # 存储键和值,健名为第一行的每一项
+        dic[lst[i]] = each_line[i]
+    storage.append(dic)
+print(storage)
+'''
