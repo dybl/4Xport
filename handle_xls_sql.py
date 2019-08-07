@@ -1,10 +1,13 @@
-
 import os
 import sys
+import xlrd
+import xlwt
+import xlutils
+import pymssql
 
 '''
-path1 = './input/'  #指定名称文件夹所在路径
-path2 = './test/'    #新建文件夹所在路径
+path1 = './input/' 
+path2 = './output/'  
  
 def GenDirFromXlsx():
     dirs = os.listdir(path1)
