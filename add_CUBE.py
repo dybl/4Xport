@@ -1,7 +1,7 @@
 '''
 使用须知：
-1，脚本作用：新增指标时，生成['ZB_FACT_DIM_YS', 'Y_COLUMN_MAP_ZBFACT', 'ZBMX' , 'HD_ZBMX_HZ']这4张表的初始化数据
-2，原则：['ZB_FACT_DIM_YS', 'Y_COLUMN_MAP_ZBFACT']先删除后插入；['ZBMX' , 'HD_ZBMX_HZ']先判断后操作
+1，脚本作用：新增指标时，生成  M_CHART_ZBDW表的初始化数据
+2，原则：
 3，使用时需修改：
     1）数据库连接
     2）指标清单的路径，zb.txt中指标按行罗列,万万不能有空格出现
@@ -10,7 +10,6 @@
 '''
 
 import pymssql  as msdb
-import os
 
 class Mssql:
     '''
@@ -68,6 +67,8 @@ class Scripts(Mssql):
             key = 'id'
         elif tableName in ('Y_COLUMN_MAP_ZBFACT', 'HD_ZBMX_HZ_YS', 'HD_ZBMX_HZ'):
             key = 'zb_id'
+        elif tableName =='M_CHART_ZBDW':
+            key = 'mx_id'
         return self.str.format(tableName=tableName, zb=zbId, key=key)
 
 
@@ -100,7 +101,7 @@ class Scripts(Mssql):
 
 
 def sqlStartBf(tableName, infomation):
-    if tableName in  ['ZBMX' , 'HD_ZBMX_HZ_YS', 'HD_ZBMX_HZ']:
+    if tableName in  ['ZBMX' , 'HD_ZBMX_HZ_YS', 'HD_ZBMX_HZ','M_CHART_ZBDW']:
         sqlStartBf = "/************"+infomation+"******************{tableName}***{zb}******************************/\n\nif exists(select 1 from {tableName} where {key}='{zb}')\nbegin\n\tprint '新增指标{zb},但指标{zb}已存在于表{tableName}中,请核查!'\nend\nif not exists(select 1 from {tableName} where {key}='{zb}') \nbegin \n\t"
     elif tableName in  ['ZB_FACT_DIM_YS', 'Y_COLUMN_MAP_ZBFACT']:
         sqlStartBf = "/************"+infomation+"******************{tableName}***{zb}******************************/\n\n\tdelete from {tableName} where {key}='{zb}' \n\t"
@@ -109,7 +110,7 @@ def sqlStartBf(tableName, infomation):
     return sqlStartBf
 
 def SqlEnd(tableName):
-    if tableName in ['ZBMX' , 'HD_ZBMX_HZ_YS', 'HD_ZBMX_HZ']:
+    if tableName in ['ZBMX' , 'HD_ZBMX_HZ_YS', 'HD_ZBMX_HZ','M_CHART_ZBDW']:
         SqlEnd = '\nend\ngo\n\n'
     elif tableName in ['ZB_FACT_DIM_YS', 'Y_COLUMN_MAP_ZBFACT']:
         SqlEnd = 'go\n\n'
@@ -124,17 +125,17 @@ def SqlEnd(tableName):
 
 #数据库连接信息
 # server_host = '172.17.1.233\\BI2012'
-# server_database = 'HOSPITAL_CUBEDB_PHARMACY'
+# server_database = 'PLATFORM_TYPT_PHARMACY'
 # server_user = 'sa'
 # server_password = 'biadmin@123'
 server_host = '172.17.17.121\\BI2012'
-server_database = 'HOSPITAL_CUBEDB_KFZ'
+server_database = 'PLATFORM_TYPT_KFZ'
 server_user = 'sa'
 server_password = 'biadmin'
 server_conn = Mssql(host=server_host,database=server_database,user=server_user,password=server_password)
 
-#需要更新的表,指标列表 'ZBMX','Y_COLUMN_MAP_ZBFACT','HD_ZBMX_HZ','ZB_FACT_DIM_YS'
-tables = ['ZBMX','Y_COLUMN_MAP_ZBFACT','HD_ZBMX_HZ','ZB_FACT_DIM_YS']
+#需要更新的表,'M_CHART_ZBDW'
+tables = ['M_CHART_ZBDW']
 # zbList = server_conn.ExeSql("select id from ZBMX where id  between 'C501' and 'C526' order by id ")
 # sqlStart = "if not exists(select 1 from {tableName} where {key}='{zb}') \nbegin \n"
 
@@ -150,7 +151,8 @@ findId = Scripts(findId)
 
 zbList = []
 #读取文件
-with open(r'./input/zb.txt','r')as f:
+
+with open(r'input\zb.txt','r')as f:
     while True:
         line = f.readline()
         # print(line)
@@ -162,12 +164,7 @@ with open(r'./input/zb.txt','r')as f:
 # print(zbList)
 
 #写入文件
-
-
-prefix = "add_"
-for i in range(len(tables)):
-    output_file_name = './output/CUBE/' + str(prefix) + str(tables[i]) + ".sql"
-    f = open(output_file_name, 'w+')
+with open(r'output\TYPT\add_zb_M_CHART_ZBDW.sql', 'w+')as f:
     cnt = 0  #用于计数，第几个指标
     for zb in zbList:
         zb = zb.strip()  # 去除zb.txt中的空格， 必须
@@ -176,17 +173,17 @@ for i in range(len(tables)):
         zbId = zb
         info = "No." + str(cnt) + ": " + zbId
         print(info)
-
-        sqlStartScripts = Scripts(sqlStartBf(tables[i], info))
-        f.writelines(sqlStartScripts.SqlStart(zbId,tables[i]))
-        sqlDict = server_conn.ExeSql(exeSqlScripts.SqlStart(zbId,tables[i]))
-        findIdDict = server_conn.ExeSql(findId.SqlStart('',tables[i]))
-        # print(findId.format(table=table))
-        # print(zbId)
-        if findIdDict:
-            findIdP = findIdDict[0].get('name')
-        else:
-            findIdP =''
-        f.writelines(exeSqlScripts.SqlData(sqlDict,tables[i],findIdP,zbId))
-        f.writelines(SqlEnd(tables[i]))
+        for table in tables:
+            sqlStartScripts = Scripts(sqlStartBf(table, info))
+            f.writelines(sqlStartScripts.SqlStart(zbId,table))
+            sqlDict = server_conn.ExeSql(exeSqlScripts.SqlStart(zbId,table))
+            findIdDict = server_conn.ExeSql(findId.SqlStart('',table))
+            # print(findId.format(table=table))
+            # print(zbId)
+            if findIdDict:
+                findIdP = findIdDict[0].get('name')
+            else:
+                findIdP =''
+            f.writelines(exeSqlScripts.SqlData(sqlDict,table,findIdP,zbId))
+            f.writelines(SqlEnd(table))
 

@@ -97,8 +97,9 @@ class Scripts(Mssql):
                 if sqlCols[i]['name']==findId: #自增列不进行更新
                         continue
                 col = sqlCols[i]['name']
-                sqlScripts = sqlScripts + ',' + col + '=\'' + str(dict[0][col]).replace('\'','\'\'') + '\'\n'  #.replace('"','\'\'')
-            return sqlStart + 'set\n' + sqlScripts.strip(',')  #+ "where zb_id='{zb}'".format(zb=zb)
+                sqlScripts = sqlScripts + ',' + col + '=\'' + str(dict[0][col]).replace('\'','\'\'').replace('None','null') + '\''  #.replace('"','\'\'')
+            # print(sqlScripts)
+            return sqlStart + 'set\n' + sqlScripts.strip(',').replace('\'null\'','null')   #+ "where zb_id='{zb}'".format(zb=zb)
         else:
             pass
 
@@ -118,7 +119,7 @@ server_conn = Mssql(host=server_host,database=server_database,user=server_user,p
 #新增的表
 #tables = ['ZBMX','HD_ZBMX_HZ']
 #修改的表
-tables =['ZBMX']
+tables =['HD_ZBMX_HZ','ZBMX']
 #查询结果集
 exeSql = "select * from {tableName} where {key}='{zb}'"
 # 查询当前表的所有字段--更新时更新出自增列的所有字段
@@ -179,6 +180,7 @@ with open(r'input\zb.txt','r')as f:
 def Update():
     updateSqlStartScripts=Scripts(updateSqlStartBF(info))
     sqlDict = server_conn.ExeSql(exeSqlScripts.SqlStart(zb, table))
+    # print(sqlDict)
     sqlCols = server_conn.ExeSql(exeSqlColsScripts.SqlStart('', table))  # 当前表所有字段名组成的list
     findIdDict = server_conn.ExeSql(findId.SqlStart('',table))
     if sqlDict:
