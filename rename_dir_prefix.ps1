@@ -1,0 +1,1 @@
+get-childItem  -r *.aspx | rename-Item -newname{'7.'+$_.name}

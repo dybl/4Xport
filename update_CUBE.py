@@ -217,4 +217,4 @@ with open(r'output\CUBE\update_zb.sql', 'w+')as f:
         print(info)
         for table in tables:
             Update()
-            #Insert()
+            Insert()
