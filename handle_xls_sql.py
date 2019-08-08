@@ -36,19 +36,30 @@ else:
 
 input_zb_list = './input_zb_list/'
 
-def get_xlsx_data(filename,amount):
+def xlsx_2_dict(filename,amount):
     xlsx_dir = input_zb_list + filename + '.xlsx'
     data = xlrd.open_workbook(xlsx_dir)
     sheet = data.sheets()[amount]
     rows = sheet.nrows
     cols = sheet.ncols
-    origin_dict = {}
+    dict = {}
+    zbList = []
     for i in range(1,rows):
         for j in range(cols):
-            subject_classification = sheet.row_values(j)
+            zbList = sheet.cell_value(i,j)
+            print(zb_fl)
+            #indicator_lists = sheet.cell_value(i, j)
+            #print(subject_classification)
+            #print(indicator_lists)
+            #dict[subject_classification]
+        '''
+        for j in range(cols):
+            subject_classification = sheet.cell_value(0,j)
             indicator_lists = sheet.cell_value(i,j)
-            origin_dict[subject_classification] = indicator_lists
-        yield origin_dict
+            dict[subject_classification] = indicator_lists
+        yield dict
+        '''
+        yield dict
 
 '''
 def export_init_data(self, parameter_list):
@@ -59,7 +70,7 @@ def export_init_data(self, parameter_list):
 '''
 
 if __name__ == '__main__':
-    for i in get_xlsx_data('test', 0):
+    for i in xlsx_2_dict('test', 0):
         print(i)
         '''
         j = json.dumps(i,ensure_ascii=True)
