@@ -5,6 +5,7 @@ import xlrd
 #from xlutils import *
 import pymssql
 #import json
+import argparse
 
 '''
 path1 = './input/' 
@@ -18,6 +19,17 @@ def GenDirFromXlsx():
         os.mkdir(file_name)
 GenDirFromXlsx()
 '''
+parser = argparse.ArgumentParser()
+
+parser.add_argument("--filename", help="The name of store the summary indicators's xlsx")
+parser.add_argument("--amount",default=0, type=int, help="The sheet number which needed to process")
+args = parser.parse_args()
+
+if args.filename:
+    print("请输入存放在input_zb_list目录下指标汇总的xlsx文件名")
+else:
+    print("未输入文件名，不能进行指标抽取，请重新输入")
+
 output_dir = './output_init_data/test/'
 if os.path.exists(output_dir):
     print('Done!')
@@ -231,7 +243,7 @@ def xlsx_2_dict(filename,amount):
     
 
 
-xlsx_2_dict('test',0)
+xlsx_2_dict(args.filename,args.amount)
 
 print("-------------------------------\n")
 print("指标脚本已导出至--->output/CUBE\n")
@@ -244,24 +256,6 @@ def export_init_data(self, parameter_list):
     for i in range(len(tables)):
         output_file_name = output_dir + str(prefix) + str(tables) + ".sql"
         f = open(output_file_name, 'w+')
-'''
-
-
-
-        
-
-'''
-zb_data = xlrd.open_workbook(input_xlsx)
-sheet = zb_data.sheets()[0]
-rows = sheet.nrows
-cols = sheet.ncols
-for i in range(rows):
-    indicator_subject_classification = sheet.cell_value(i)
-    for i in indicator_subject_classification:
-        if eval(i).get('主题分类'):
-            print(eval(i)['主题分类'])
-        elif eval(i).get('指标'):
-            print(eval(i)['指标'])
 '''
 
 '''
