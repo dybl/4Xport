@@ -21,10 +21,12 @@ GenDirFromXlsx()
 '''
 parser = argparse.ArgumentParser()
 
-parser.add_argument(
-    "--filename", help="The name of store the summary indicators's xlsx")
-parser.add_argument("--amount", default=0, type=int,
-                    help="The sheet number which needed to process")
+parser.add_argument("-f", "--filename", help="The name of store the summary indicators's xlsx")
+parser.add_argument("-a", "--amount", default=0, type=int, help="The sheet number which needed to process")
+parser.add_argument("-s", "--server", help="The server host address which to connect")
+parser.add_argument("-d", "--database", help="The database name which to connect")
+parser.add_argument("-u", "--user", default="sa", help="The togin user name which to connnect")
+parser.add_argument("-p", "--password", help="The login password which to connect")
 args = parser.parse_args()
 
 if args.filename:
@@ -179,12 +181,8 @@ def SqlEnd(tableName):
     return SqlEnd
 
 
-server_host = '172.17.17.121\\BI2012'
-server_database = 'HOSPITAL_CUBEDB_KFZ'
-server_user = 'sa'
-server_password = 'biadmin'
-server_conn = Mssql(host=server_host, database=server_database,
-                    user=server_user, password=server_password)
+server_conn = Mssql(host=args.server, database=args.database,
+                    user=args.user, password=args.password)
 
 
 tables = ['ZBMX', 'Y_COLUMN_MAP_ZBFACT', 'HD_ZBMX_HZ', 'ZB_FACT_DIM_YS']
@@ -206,7 +204,7 @@ def xlsx_2_dict(filename, amount):
     dict = {}
     subject = sheet.col_values(0)
     for i in range(len(subject)):
-        zb_map_dir = output_dir + str(subject[i])
+        zb_map_dir = output_dir + str(len(subject)) + str(subject[i])
         if os.path.exists(zb_map_dir):
             print('已经存在相应主题文件夹！')
         else:
