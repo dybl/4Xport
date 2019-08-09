@@ -204,7 +204,7 @@ def xlsx_2_dict(filename, amount):
     dict = {}
     subject = sheet.col_values(0)
     for i in range(len(subject)):
-        zb_map_dir = output_dir + str(len(subject)) + str(subject[i])
+        zb_map_dir = output_dir + str(subject[i])
         if os.path.exists(zb_map_dir):
             print('已经存在相应主题文件夹！')
         else:
