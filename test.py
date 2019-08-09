@@ -8,7 +8,7 @@ def main():
     book = open_workbook(xlsfilename, formatting_info=False)
 
     cursheet = book.sheet_by_index(0)
-    basestring = ()
+    basestring = () 
     map_result = list()
     for row in range(cursheet.nrows):
         content = [cursheet.cell(row, col).value for col in range(cursheet.ncols)]

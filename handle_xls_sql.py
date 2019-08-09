@@ -211,7 +211,7 @@ def xlsx_2_dict(filename, amount):
             os.mkdir(zb_map_dir)
             print("没有相应主题文件夹，自动创建！")
     prefix = "初始化数据更新脚本_CUBE"
-    output_file_name = zb_map_dir + str(prefix) + ".sql"
+    output_file_name = output_dir + str(prefix) + ".sql"
     f = open(output_file_name, 'w+')
     cnt = 0  # 用于计数，第几个指标
     zbList = sheet.col_values(1)
