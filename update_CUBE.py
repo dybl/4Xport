@@ -166,7 +166,7 @@ SqlEndScripts=Scripts(SqlEnd)
 
 zbList = []
 #读取文件
-with open(r'input\zb.txt','r')as f:
+with open(r'input_zb_list\zb.txt','r')as f:
     while True:
         line = f.readline()
         # print(line)
@@ -208,7 +208,7 @@ def Insert():
 
 
 #写入文件
-with open(r'output\CUBE\update_zb.sql', 'w+')as f:
+with open(r'output\update_zb.sql', 'w+')as f:
     cnt = 0  #用于计数，第几个指标
     for zb in zbList:
         zb = zb.strip()  # 去除zb.txt中的空格， 必须
