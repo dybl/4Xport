@@ -238,6 +238,20 @@ xlsx_2_dict(args.filename, args.amount)
 print("-------------------------------\n")
 print("指标脚本已导出至--->output_init_data文件夹相应主题目录下\n")
 
+'''
+# The above import may fail for some other reason. Ensure that the
+# issue is really that pymssql is missing to avoid masking other
+# exceptions on Python 2.
+try:
+    import pymssql
+except ImportError:
+    raise ImportError(
+        "Couldn't import pymssql. Are you sure it's installed and "
+        "available on your PYTHONPATH environment variable? Did you "
+        "forget to activate a virtual environment?"
+    )
+'''
+
 
 '''
 def export_init_data(self, parameter_list):
