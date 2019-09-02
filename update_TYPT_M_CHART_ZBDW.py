@@ -107,14 +107,18 @@ class Scripts(Mssql):
 
 
 #数据库连接信息
-server_host = '172.17.1.233\\BI2012'
-server_database = 'PLATFORM_TYPT_PHARMACY'
-server_user = 'sa'
-server_password = 'biadmin@123'
+# server_host = '172.17.1.233\\BI2012'
+# server_database = 'PLATFORM_TYPT_PHARMACY'
+# server_user = 'sa'
+# server_password = 'biadmin@123'
 # server_host = 'localhost\\MSSQLSERVER2012'
 # server_database = 'PLATFORM_TYPT_PHARMACY'
 # server_user = 'sa'
 # server_password = '7889'
+server_host = '127.0.0.1'
+server_database = 'PLATFORM_TYPT_TEST'
+server_user = 'sa'
+server_password = 'junjc9'
 server_conn = Mssql(host=server_host,database=server_database,user=server_user,password=server_password)
 
 #新增的表
@@ -167,7 +171,7 @@ SqlEndScripts=Scripts(SqlEnd)
 
 zbList = []
 #读取文件
-with open(r'input\zb.txt','r')as f:
+with open(r'input_zb_list\zb_zlzb.txt','r')as f:
     while True:
         line = f.readline()
         # print(line)

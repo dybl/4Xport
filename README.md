@@ -50,3 +50,7 @@ optional arguments:
 ## TODO
 Do not change the code in 4Xport.py unless you know what are you do
 🖕
+
+百善孝为先，论心不论事，论事贫家无孝子
+
+万恶淫为首，论事不论心，论心自古无完人

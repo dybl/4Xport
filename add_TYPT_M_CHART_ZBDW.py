@@ -132,6 +132,10 @@ server_host = '172.17.17.121\\BI2012'
 server_database = 'PLATFORM_TYPT_KFZ'
 server_user = 'sa'
 server_password = 'biadmin'
+# server_host = '127.0.0.1'
+# server_database = 'PLATFORM_TYPT_TEST'
+# server_user = 'sa'
+# server_password = 'junjc9'
 server_conn = Mssql(host=server_host,database=server_database,user=server_user,password=server_password)
 
 #需要更新的表,'M_CHART_ZBDW'
@@ -152,7 +156,7 @@ findId = Scripts(findId)
 zbList = []
 #读取文件
 
-with open(r'input\zb.txt','r')as f:
+with open(r'input_zb_list\zb_zlzb.txt','r')as f:
     while True:
         line = f.readline()
         # print(line)

@@ -114,12 +114,16 @@ server_password = 'biadmin'
 # server_database = 'HOSPITAL_CUBEDB_PHARMACY'
 # server_user = 'sa'
 # server_password = 'biadmin@123'
+# server_host = '127.0.0.1'
+# server_database = 'HOSPITAL_CUBEDB_TEST'
+# server_user = 'sa'
+# server_password = 'junjc9'
 server_conn = Mssql(host=server_host,database=server_database,user=server_user,password=server_password)
 
 #新增的表
 #tables = ['ZBMX','HD_ZBMX_HZ']
 #修改的表
-tables =['HD_ZBMX_HZ','ZBMX']
+tables =['ZBMX']
 #查询结果集
 exeSql = "select * from {tableName} where {key}='{zb}'"
 # 查询当前表的所有字段--更新时更新出自增列的所有字段
@@ -166,7 +170,7 @@ SqlEndScripts=Scripts(SqlEnd)
 
 zbList = []
 #读取文件
-with open(r'input_zb_list\zb.txt','r')as f:
+with open(r'input_zb_list\zb_zlzb.txt','r')as f:
     while True:
         line = f.readline()
         # print(line)
@@ -208,7 +212,7 @@ def Insert():
 
 
 #写入文件
-with open(r'output\update_zb.sql', 'w+')as f:
+with open(r'output\CUBE\update_CUBE_zb.sql', 'w+')as f:
     cnt = 0  #用于计数，第几个指标
     for zb in zbList:
         zb = zb.strip()  # 去除zb.txt中的空格， 必须
@@ -217,4 +221,4 @@ with open(r'output\update_zb.sql', 'w+')as f:
         print(info)
         for table in tables:
             Update()
-            Insert()
+            #Insert()
