@@ -30,7 +30,7 @@ parser.add_argument("-p", "--password", help="The login password which to connec
 args = parser.parse_args()
 
 if args.filename:
-    print("请输入存放在input_zb_list目录下指标汇总的xlsx文件名")
+    print("请输入存放在input目录下指标汇总的xlsx文件名")
 else:
     print("未输入文件名，不能进行指标抽取，请重新输入")
 
@@ -42,19 +42,19 @@ else:
     print("No such file or directory,So create it")
 
 '''
-input_dir='./input_zb_list'
+input_dir='./input'
 if os.path.exists(input_dir):
     print('Done!')
 else:
-    os.mkdir('./input_zb_list')
+    os.mkdir('./input')
     print("No such file or directory,So create it")
 '''
 
-input_zb_list = './input_zb_list/'
+input = './input/'
 
 '''
 def xlsx_2_dict(filename,amount):
-    xlsx_dir = input_zb_list + filename + '.xlsx'
+    xlsx_dir = input + filename + '.xlsx'
     data = xlrd.open_workbook(xlsx_dir)
     sheet = data.sheets()[amount]
     rows = sheet.nrows
@@ -195,7 +195,7 @@ exeSqlScripts = Scripts(exeSql)
 findId = Scripts(findId)
 
 def xlsx_2_dict(filename, amount):
-    xlsx_dir = input_zb_list + filename + '.xlsx'
+    xlsx_dir = input + filename + '.xlsx'
     data = xlrd.open_workbook(xlsx_dir)
     sheet = data.sheets()[amount]
     rows = sheet.nrows
