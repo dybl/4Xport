@@ -19,7 +19,7 @@ class conn2sql:
         else:
             return cursor
 
-    def exec(self, sql):
+    def exec(self, sql): 
         cursor = self._getConn()
         cursor.execute(sql)
         dataList = cursor.fetchall()
