@@ -144,7 +144,7 @@ tables = ['HD_ZBMX_HZ']
 # sqlStart = "if not exists(select 1 from {tableName} where {key}='{zb}') \nbegin \n"
 
 # sqlStartBf = "/******************************{tableName}***{zb}******************************/\n\nif exists(select 1 from {tableName} where {key}='{zb}')\nbegin\n\tprint '新增指标{zb},但指标{zb}已存在于表{tableName}中,请核查!'\nend\nif not exists(select 1 from {tableName} where {key}='{zb}') \nbegin \n\t"
-exeSql = "select * from {tableName} where {key}='{zb}'"
+exeSql = "select zb_id,fact_table from {tableName} where {key}='{zb}'"
 findId ='''select b.name from sys.objects a,sys.columns b where a.object_id=b.object_id and a.type='U' 
 and a.name='{tableName}'and b.is_identity=1'''
 
@@ -167,7 +167,7 @@ with open(r'input_zb_list\zb.txt','r')as f:
 # print(zbList)
 
 #写入文件
-with open(r'output\add_CUBE_zb.sql', 'w+')as f:
+with open(r'output\select_zb_fact_table.sql', 'w+')as f:
     cnt = 0  #用于计数，第几个指标
     for zb in zbList:
         zb = zb.strip()  # 去除zb.txt中的空格， 必须
