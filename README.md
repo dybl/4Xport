@@ -50,14 +50,3 @@ optional arguments:
 ## TODO
 Do not change the code in 4Xport.py unless you know what are you do
 🖕
-
-百善孝为先，论心不论事，论事贫家无孝子
-
-万恶淫为首，论事不论心，论心自古无完人
-
- 联系迪庆藏族自治州人民医院 医院的胡美玲，协助她把 物资出库分析.aspx
-物资入库分析.aspx
- 
-，2.设备维修分析.aspx
-2.设备成本效益分析.aspx
- 这四个菜单放出来，ODR满足，报表文件企业人一下现场是不是有，增加一个二级菜单：医疗资源，三级菜单就是这四个报表
