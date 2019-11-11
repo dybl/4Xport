@@ -15,11 +15,11 @@ set/a ErrorNumber=0
 ::User need to input the DB Server name and DB name.
 ::set /p servername=DB Server Name (eg. localhost):
 ::set /p DBname=Database Name (eg. TestDB):
-::set  servername="172.17.17.121\BI2012"
-set  servername="127.0.0.1"
-set  DBname="HOSPITAL_CUBEDB"
+set  servername="172.17.17.121\BI2012"
+::set  servername="127.0.0.1"
+set  DBname="HOSPITAL_CUBEDB_SZ"
 set  username="sa"
-set  pwd="junjc9"
+set  pwd="biadmin"
 
 :askagain
 set /p continueFlag=Did u set the sql connection string ?Are you sure to run SQL Scripts? (Y,N):

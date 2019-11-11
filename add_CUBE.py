@@ -33,7 +33,7 @@ class Mssql:
 
     def ExeSql(self, sql):
         cur = self._GetConnect()
-        # print(sql)
+        #print(sql)
         cur.execute(sql)
         dataList = cur.fetchall()
         columns = [col[0] for col in cur.description]
@@ -71,8 +71,8 @@ class Scripts(Mssql):
 
 
     def SqlData(self,dict,tableName,findId,zb):
-        # print(zb)
-        # print(dict)
+        #print(zb)
+        #print(dict)
         sqlStart = 'INSERT {tableName} ('.format(tableName=tableName)
         valueList = []
         key1 = ''
@@ -126,20 +126,20 @@ def SqlEnd(tableName):
 # server_database = 'HOSPITAL_CUBEDB_PHARMACY'
 # server_user = 'sa'
 # server_password = 'biadmin@123'
-# server_host = '172.17.17.121\\BI2012'
-# server_database = 'HOSPITAL_CUBEDB_KFZ'
-# server_user = 'sa'
-# server_password = 'biadmin'
-server_host = '127.0.0.1\\BI'
-server_database = 'HOSPITAL_CUBEDB_SZ'
+server_host = '172.17.17.121\\BI2012'
+server_database = 'HOSPITAL_CUBEDB_KFZ'
 server_user = 'sa'
-server_password = '123456'
+server_password = 'biadmin'
+# server_host = '127.0.0.1\\BI'
+# server_database = 'HOSPITAL_CUBEDB_SZ'
+# server_user = 'sa'
+# server_password = '123456'
 
 server_conn = Mssql(host=server_host,database=server_database,user=server_user,password=server_password)
 
 #需要更新的表,指标列表 'ZBMX','Y_COLUMN_MAP_ZBFACT','HD_ZBMX_HZ','ZB_FACT_DIM_YS'
-# tables = ['ZBMX','Y_COLUMN_MAP_ZBFACT','HD_ZBMX_HZ','ZB_FACT_DIM_YS']
-tables = ['HD_ZBMX_HZ']
+tables = ['ZB_FACT_DIM_YS']
+# tables = ['ZBMX']
 # zbList = server_conn.ExeSql("select id from ZBMX where id  between 'C501' and 'C526' order by id ")
 # sqlStart = "if not exists(select 1 from {tableName} where {key}='{zb}') \nbegin \n"
 
@@ -155,19 +155,19 @@ findId = Scripts(findId)
 
 zbList = []
 #读取文件
-with open(r'input_zb_list\zb.txt','r')as f:
+with open(r'input\zb1.txt','r')as f:
     while True:
         line = f.readline()
-        # print(line)
+        print(line)
         if line:
             zbList.append(line.strip('\n'))
         else:
             break
 
-# print(zbList)
+print(zbList)
 
 #写入文件
-with open(r'output\add_CUBE_zb.sql', 'w+')as f:
+with open(r'add_CUBE_ba.sql', 'w+')as f:
     cnt = 0  #用于计数，第几个指标
     for zb in zbList:
         zb = zb.strip()  # 去除zb.txt中的空格， 必须
@@ -181,8 +181,8 @@ with open(r'output\add_CUBE_zb.sql', 'w+')as f:
             f.writelines(sqlStartScripts.SqlStart(zbId,table))
             sqlDict = server_conn.ExeSql(exeSqlScripts.SqlStart(zbId,table))
             findIdDict = server_conn.ExeSql(findId.SqlStart('',table))
-            # print(findId.format(table=table))
-            # print(zbId)
+            #print(findId.format(table=table))
+            #print(zbId)
             if findIdDict:
                 findIdP = findIdDict[0].get('name')
             else:

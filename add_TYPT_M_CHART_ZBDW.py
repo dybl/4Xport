@@ -128,18 +128,23 @@ def SqlEnd(tableName):
 # server_database = 'PLATFORM_TYPT_PHARMACY'
 # server_user = 'sa'
 # server_password = 'biadmin@123'
-server_host = '172.17.17.121\\BI2012'
-server_database = 'PLATFORM_TYPT_KFZ'
-server_user = 'sa'
-server_password = 'biadmin'
+# server_host = '172.17.17.121\\BI2012'
+# server_database = 'PLATFORM_TYPT_KFZ'
+# server_user = 'sa'
+# server_password = 'biadmin'
 # server_host = '127.0.0.1'
 # server_database = 'PLATFORM_TYPT_TEST'
 # server_user = 'sa'
 # server_password = 'junjc9'
+server_host = '127.0.0.1\\BI'
+server_database = 'HOSPITAL_CUBEDB_SZ'
+server_user = 'sa'
+server_password = '123456'
 server_conn = Mssql(host=server_host,database=server_database,user=server_user,password=server_password)
 
 #需要更新的表,'M_CHART_ZBDW'
-tables = ['M_CHART_ZBDW']
+# tables = ['M_CHART_ZBDW']
+tables = ['ZBMX','Y_COLUMN_MAP_ZBFACT','HD_ZBMX_HZ','ZB_FACT_DIM_YS']
 # zbList = server_conn.ExeSql("select id from ZBMX where id  between 'C501' and 'C526' order by id ")
 # sqlStart = "if not exists(select 1 from {tableName} where {key}='{zb}') \nbegin \n"
 
@@ -156,7 +161,7 @@ findId = Scripts(findId)
 zbList = []
 #读取文件
 
-with open(r'input_zb_list\zb_zlzb.txt','r')as f:
+with open(r'input\zb.txt','r')as f:
     while True:
         line = f.readline()
         # print(line)
@@ -168,7 +173,7 @@ with open(r'input_zb_list\zb_zlzb.txt','r')as f:
 # print(zbList)
 
 #写入文件
-with open(r'output\TYPT\add_zb_M_CHART_ZBDW.sql', 'w+')as f:
+with open(r'add_cube.sz.sql', 'w+')as f:
     cnt = 0  #用于计数，第几个指标
     for zb in zbList:
         zb = zb.strip()  # 去除zb.txt中的空格， 必须

@@ -123,7 +123,7 @@ server_conn = Mssql(host=server_host,database=server_database,user=server_user,p
 #新增的表
 #tables = ['ZBMX','HD_ZBMX_HZ']
 #修改的表
-tables =['ZBMX']
+tables =['ZB_FACT_DIM_YS']
 #查询结果集
 exeSql = "select * from {tableName} where {key}='{zb}'"
 # 查询当前表的所有字段--更新时更新出自增列的所有字段
@@ -170,7 +170,7 @@ SqlEndScripts=Scripts(SqlEnd)
 
 zbList = []
 #读取文件
-with open(r'input_zb_list\zb_zlzb.txt','r')as f:
+with open(r'input\zb1.txt','r')as f:
     while True:
         line = f.readline()
         # print(line)
@@ -212,7 +212,7 @@ def Insert():
 
 
 #写入文件
-with open(r'output\CUBE\update_CUBE_zb.sql', 'w+')as f:
+with open(r'update_CUBE_ba.sql', 'w+')as f:
     cnt = 0  #用于计数，第几个指标
     for zb in zbList:
         zb = zb.strip()  # 去除zb.txt中的空格， 必须
