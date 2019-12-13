@@ -3,7 +3,7 @@ class Xport(object):
     def __init__(self,str):
         self.str = str
 
-    def Judge(self,indicator, table):
+    def Judge(self,metric, table):
         if table == 'ZB_FACT_DIM_YS':
             k = 'zbmx_id'
         elif table == 'ZBMX':
@@ -12,7 +12,7 @@ class Xport(object):
             k = 'zb_id'
         elif table =='M_CHART_ZBDW':
             k = 'mx_id'
-        return self.str.format(table=table, zb=indicator, k=k)
+        return self.str.format(table=table, zb=metric, k=k)
 
 
     def InitData(self,data,table,select,zb):
